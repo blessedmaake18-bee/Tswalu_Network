@@ -7,7 +7,7 @@ Project ID: CMPG325-2026-029
 
 This repository documents the design, implementation, and testing of a
 network solution for Tswalu Steel Fabrication, built in Cisco Packet
-Tracer as part of the CMPG325 individual semester project.
+Tracer.
 
 The network provides connectivity for office, production, server, and
 management segments, with a dedicated isolated Guest Wi-Fi network,

@@ -1,1 +1,73 @@
 
+!
+version 15.1
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname Router
+!
+ip cef
+ipv6 unicast-routing
+!
+no ipv6 cef
+!
+spanning-tree mode pvst
+!
+interface GigabitEthernet0/0
+ no ip address
+ duplex auto
+ speed auto
+!
+interface GigabitEthernet0/0.10
+ encapsulation dot1Q 10
+ ip address 172.30.12.65 255.255.255.224
+ ipv6 address 2001:DB8:ACAD:10::1/64
+!
+interface GigabitEthernet0/0.20
+ encapsulation dot1Q 20
+ ip address 172.30.12.1 255.255.255.192
+ ipv6 address 2001:DB8:ACAD:20::1/64
+!
+interface GigabitEthernet0/0.30
+ encapsulation dot1Q 30
+ ip address 172.30.12.129 255.255.255.240
+ ipv6 address 2001:DB8:ACAD:30::1/64
+!
+interface GigabitEthernet0/0.40
+ encapsulation dot1Q 40
+ ip address 172.30.12.145 255.255.255.240
+ ipv6 address 2001:DB8:ACAD:40::1/64
+!
+interface GigabitEthernet0/0.50
+ encapsulation dot1Q 50
+ ip address 172.30.12.97 255.255.255.224
+ ipv6 address 2001:DB8:ACAD:50::1/64
+!
+interface GigabitEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+!
+interface Vlan1
+ no ip address
+ shutdown
+!
+ip classless
+!
+ip flow-export version 9
+!
+enable secret TswaluSecure2026
+!
+line con 0
+ password TswaluConsole2026
+ login
+!
+line aux 0
+!
+line vty 0 4
+ password TswaluVTY2026
+ login
+!
+end

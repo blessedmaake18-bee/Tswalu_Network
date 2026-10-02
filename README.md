@@ -12,7 +12,7 @@ The network was designed to provide segmented connectivity for different organis
 
 **Industry:** Manufacturing
 
-**Project:** CMPG325 Computer Networks Individual Semester Project
+**Project:** CMPG325 Computer Networks
 
 **Technical Challenge:** IPv6 Dual-Stack Addressing and Routing
 
@@ -24,38 +24,38 @@ The network uses a router-on-a-stick architecture with a single Cisco switch con
 
 Five VLANs are implemented:
 
-| VLAN | Name | IPv4 Network | IPv6 Prefix |
-|------|------|--------------|-------------|
-| 10 | MANAGEMENT | 172.30.12.64/27 | 2001:DB8:ACAD:10::/64 |
-| 20 | PRODUCTION | 172.30.12.0/26 | 2001:DB8:ACAD:20::/64 |
-| 30 | FINANCE | 172.30.12.128/28 | 2001:DB8:ACAD:30::/64 |
-| 40 | IT_SERVICES | 172.30.12.144/28 | 2001:DB8:ACAD:40::/64 |
-| 50 | GUEST | 172.30.12.96/27 | 2001:DB8:ACAD:50::/64 |
+| VLAN | Name                        | IPv4 Network     | IPv6 Prefix           |
+| ---- | --------------------------- | ---------------- | --------------------- |
+| 10   | Management & Administration | 172.30.12.64/27  | 2001:DB8:ACAD:10::/64 |
+| 20   | Production                  | 172.30.12.0/26   | 2001:DB8:ACAD:20::/64 |
+| 30   | Finance & HR                | 172.30.12.128/28 | 2001:DB8:ACAD:30::/64 |
+| 40   | IT & Services               | 172.30.12.144/28 | 2001:DB8:ACAD:40::/64 |
+| 50   | Guest Wi-Fi                 | 172.30.12.96/27  | 2001:DB8:ACAD:50::/64 |
 
 ## Default Gateways
 
-| VLAN | IPv4 Gateway | IPv6 Gateway |
-|------|--------------|--------------|
-| 10 | 172.30.12.65 | 2001:DB8:ACAD:10::1 |
-| 20 | 172.30.12.1 | 2001:DB8:ACAD:20::1 |
-| 30 | 172.30.12.129 | 2001:DB8:ACAD:30::1 |
-| 40 | 172.30.12.145 | 2001:DB8:ACAD:40::1 |
-| 50 | 172.30.12.97 | 2001:DB8:ACAD:50::1 |
+| VLAN | IPv4 Gateway  | IPv6 Gateway        |
+| ---- | ------------- | ------------------- |
+| 10   | 172.30.12.65  | 2001:DB8:ACAD:10::1 |
+| 20   | 172.30.12.1   | 2001:DB8:ACAD:20::1 |
+| 30   | 172.30.12.129 | 2001:DB8:ACAD:30::1 |
+| 40   | 172.30.12.145 | 2001:DB8:ACAD:40::1 |
+| 50   | 172.30.12.97  | 2001:DB8:ACAD:50::1 |
 
 ## Physical Topology
 
 The topology consists of:
 
-- Cisco 1941 router (R1)
-- Cisco switch (SW1)
-- PC-Admin
-- PC-Production
-- PC-Finance
-- PC-IT
-- PC-Office
-- Server (SRV1)
-- Guest wireless access point (AP-Guest)
-- Guest wireless laptop (Laptop-Guest)
+* Cisco 1941 router (R1)
+* Cisco switch (SW1)
+* PC-Admin
+* PC-Office
+* PC-Production
+* PC-Finance
+* PC-IT
+* SRV1
+* AP-Guest
+* Laptop-Guest
 
 ## Configuration
 
@@ -67,44 +67,64 @@ Access ports are assigned to the appropriate VLANs according to the network desi
 
 ## IPv6
 
-IPv6 routing is enabled on the router using:
+IPv6 routing is enabled on R1 using:
 
 `ipv6 unicast-routing`
 
 Each VLAN has a dedicated IPv6 /64 prefix and default gateway.
 
-IPv6 connectivity was verified using ICMPv6 ping tests.
+IPv6 connectivity was verified using ICMPv6 ping tests between gateways, same-VLAN hosts, and hosts across different VLANs.
 
 ## Guest Network
 
 VLAN 50 is dedicated to guest wireless access.
 
-The guest network provides connectivity to the guest gateway while preventing unauthorised access to internal network resources.
+The guest network provides connectivity to the guest gateway while preventing guest devices from accessing internal network resources.
+
+Guest isolation is implemented using IPv4 and IPv6 ACLs on the Guest VLAN subinterface on R1.
 
 ## Testing and Verification
 
 Network operation was verified using:
 
-- `show vlan brief`
-- `show interfaces trunk`
-- `show ip interface brief`
-- `show ipv6 interface brief`
-- IPv4 ping tests
-- IPv6 ping tests
-- Inter-VLAN connectivity tests
-- Guest isolation tests
+* `show vlan brief`
+* `show interfaces trunk`
+* `show ip interface brief`
+* `show ipv6 interface brief`
+* IPv4 ping tests
+* IPv6 ping tests
+* Inter-VLAN connectivity tests
+* SSH authentication tests
+* Guest isolation tests
+* HTTP access tests
 
-Successful tests produced 0% packet loss where connectivity was expected.
+The following connectivity was verified:
 
-Guest isolation testing was also performed to verify that guest devices could not access restricted internal resources.
+* IPv4 gateway, same-VLAN, and inter-VLAN connectivity
+* IPv6 gateway, same-VLAN, and inter-VLAN connectivity
+* SSH access to R1 and SW1 using valid credentials
+* Rejection of invalid SSH credentials
+* Telnet access blocked because remote administration is SSH-only
+* Guest access to the Guest VLAN gateway
+* Guest access to internal VLANs blocked over IPv4 and IPv6
+* PC-Admin access to SRV1 over HTTP
+* Laptop-Guest access to SRV1 blocked over HTTP
+
+Successful connectivity tests produced 0% packet loss where connectivity was expected.
 
 ## Security
 
-Device administration was secured using:
+Device administration on R1 and SW1 was secured using:
 
-- Enable secret
-- Console password authentication
-- VTY password authentication
+* Enable secret
+* Local user authentication
+* `login local`
+* SSH-only remote access using `transport input ssh`
+* SSH version 2
+* Password encryption
+* Executive session timeout
+
+Telnet access is disabled.
 
 Configuration changes were saved to startup configuration.
 
@@ -112,12 +132,13 @@ Configuration changes were saved to startup configuration.
 
 Supporting evidence is organised in the following folders:
 
-- `configurations/` – router and switch configurations
-- `diagrams/` – network topology diagrams
-- `docs/` – project documentation and reflection
-- `ip-addressing/` – IP addressing plan
-- `packet-tracker/` – Cisco Packet Tracer project
-- `screenshots/` – configuration and testing evidence
+* `configurations/` – router and switch configuration exports
+* `diagrams/` – network topology diagrams
+* `docs/` – project documentation and reflection
+* `ip-addressing/` – IPv4 and IPv6 addressing plan
+* `packet-tracker/` – Cisco Packet Tracer project
+* `screenshots/` – configuration, connectivity, security, and guest-isolation evidence
+* `troubleshooting/` – troubleshooting notes and diagnostic evidence
 
 ## Packet Tracer
 
@@ -127,6 +148,6 @@ The completed Cisco Packet Tracer implementation is available in:
 
 ## Project Outcome
 
-The completed network provides segmented departmental connectivity, IPv4 and IPv6 dual-stack routing, and a dedicated guest wireless network.
+The completed network provides segmented departmental connectivity, IPv4 and IPv6 dual-stack routing, secured network-device administration, and a dedicated guest wireless network isolated from internal resources.
 
-The implementation was tested in Cisco Packet Tracer and the required connectivity and IPv6 functionality were verified.
+The implementation was tested in Cisco Packet Tracer and the required connectivity, IPv6 functionality, security controls, and guest-isolation requirements were verified.

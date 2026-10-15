@@ -12,7 +12,7 @@ The network was designed to provide segmented connectivity for different organis
 
 **Industry:** Manufacturing
 
-**Project:** CMPG325 Computer Networks
+**Project:** Computer Networks
 
 **Technical Challenge:** IPv6 Dual-Stack Addressing and Routing
 

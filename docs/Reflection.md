@@ -1,6 +1,6 @@
-# Reflection – Tswalu Steel Fabrication Network (CMPG325)
+# Reflection – Tswalu Steel Fabrication Network 
 
-**Student:** Blessed Maake (41432363)
+**Student:** Blessed Maake 
 **Project ID:** CMPG325-2026-029
 **Technical challenge:** IPv6 dual-stack addressing and routing
 **Change request:** Guest Wi-Fi isolated from internal resources

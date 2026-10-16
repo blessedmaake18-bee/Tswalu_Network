@@ -1,0 +1,92 @@
+! =====================================================================
+! SW1 (Cisco 2960-24TT) - REFERENCE COMMAND SCRIPT
+! Tswalu Steel Fabrication - CMPG325 - B. Maake (41432363)
+!
+! NOTE: this is a command script built from the project design. It is
+! NOT an export from the device. Your evidence file
+! Switch_SW1_Config.txt must be a real "show running-config" export
+! (see the export steps in the chat). Replace every <PLACEHOLDER> with
+! the real value from your own project before using this script.
+! =====================================================================
+enable
+configure terminal
+hostname SW1
+no ip domain-lookup
+ip domain-name <DOMAIN_NAME>
+service password-encryption
+enable secret <ENABLE_SECRET>
+username netadmin secret <ADMIN_PASSWORD>
+!
+! ---- VLANs ----
+vlan 10
+ name Management_Admin
+vlan 20
+ name Production
+vlan 30
+ name Finance_HR
+vlan 40
+ name IT_Services
+vlan 50
+ name Guest_WiFi
+exit
+!
+! ---- Trunk to R1 Gi0/0 ----
+interface <TRUNK_PORT>
+ description Trunk to R1 Gi0/0
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50
+exit
+!
+! ---- Access ports (use the real port for each device) ----
+interface <PORT_PC-ADMIN>
+ switchport mode access
+ switchport access vlan 10
+exit
+interface <PORT_PC-OFFICE>
+ switchport mode access
+ switchport access vlan 10
+exit
+interface <PORT_PC-PRODUCTION>
+ switchport mode access
+ switchport access vlan 20
+exit
+interface <PORT_PC-FINANCE>
+ switchport mode access
+ switchport access vlan 30
+exit
+interface <PORT_PC-IT>
+ switchport mode access
+ switchport access vlan 40
+exit
+interface <PORT_SRV1>
+ switchport mode access
+ switchport access vlan 40
+exit
+interface <PORT_AP-GUEST>
+ switchport mode access
+ switchport access vlan 50
+exit
+!
+! ---- Management address (VLAN 10) ----
+interface vlan 10
+ ip address 172.30.12.66 255.255.255.224
+ no shutdown
+exit
+ip default-gateway 172.30.12.65
+!
+! ---- SSH (run once, answer the modulus prompt with 2048) ----
+crypto key generate rsa
+ip ssh version 2
+!
+! ---- Secured lines ----
+line console 0
+ login local
+ exec-timeout 5 0
+exit
+line vty 0 15
+ login local
+ transport input ssh
+ exec-timeout 5 0
+exit
+end
+copy running-config startup-config
